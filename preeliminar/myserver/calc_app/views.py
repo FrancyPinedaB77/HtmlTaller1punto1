@@ -5,6 +5,9 @@ def home(request):
     return render(request, 'home.html')
 
 def sumar(request):
+    if request.method == 'GET':
+        print('es un get :D')
+        print(request.GET['suma'])
     return render(request, 'sumar.html')
 
 def restar(request):
