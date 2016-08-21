@@ -1,0 +1,298 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage[dvipsnames]{xcolor}
+\renewcommand{\bibsection}{\section{Bibliografía}}
+
+
+\let\oldenumerate=\enumerate
+\def\enumerate{
+    \oldenumerate
+    \setlength{\itemsep}{-0.0ex}
+    \setstretch{0.8}
+    }
+\let\olditemize=\itemize
+\def\itemize{
+\olditemize
+\setlength{\itemsep}{-0.0ex}
+\setstretch{0.8}
+}
+
+\usepackage[compact]{titlesec}
+\titlespacing{\section}{0pt}{8pt}{4pt}
+\titlespacing{\subsection}{0pt}{4pt}{2pt}
+\titlespacing{\subsubsection}{0pt}{4pt}{2pt}
+\titlespacing{\subsubsubsection}{0pt}{4pt}{2pt}
+
+\def\@maketitle{%
+  \newpage
+%  \null% DELETED
+%  \vskip 2em% DELETED
+  \begin{center}%
+  \let \footnote \thanks
+    {\LARGE \@title \par}%
+    \vskip 1.5em%
+    {\large
+      \lineskip .5em%
+      \begin{tabular}[t]{c}%
+        \@author
+      \end{tabular}\par}%
+    \vskip 1em%
+    {\large \@date}%
+  \end{center}%
+  \par
+  \vskip 1.5em}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language spanish
+\language_package default
+\inputencoding auto
+\fontencoding default
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\paperfontsize 12
+\spacing other 1.11
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered true
+\pdf_bookmarksopen true
+\pdf_bookmarksopenlevel 2
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
+\pdf_quoted_options "allcolors=MidnightBlue"
+\papersize default
+\use_geometry true
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 0
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 0
+\use_package mhchem 0
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style 
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\bullet 0 0 9 -1
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+
+\series bold
+\size larger
+MINE4102 - Análisis de Información sobre BigData
+\begin_inset Newline newline
+\end_inset
+
+Taller 1
+\end_layout
+
+\begin_layout Author
+
+\size normal
+Diva Martínez Laverde, Francy J.
+ Pineda, Christian Poveda Ruiz
+\begin_inset Newline newline
+\end_inset
+
+{dm.martinez831, fj.pineda, cn.poveda542}@uniandes.edu.co
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%Borrar esto para que salga el índice
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introducción
+\end_layout
+
+\begin_layout Section
+Descripción de acceso a la solución
+\end_layout
+
+\begin_layout Section
+Descripción técnica general
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+acá van tecnologias, algoritmos, expresiones regulares, xquery y etc.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+WebServer
+\end_layout
+
+\begin_layout Standard
+Super breve explicación de nuestro uso de Django, templates, html5, css3,
+ javascript, etc etc etc
+\end_layout
+
+\begin_layout Subsection
+Worker
+\end_layout
+
+\begin_layout Subsubsection
+Arañita
+\end_layout
+
+\begin_layout Subsubsection
+RSS reader
+\end_layout
+
+\begin_layout Standard
+Los tags por defecto en 
+\end_layout
+
+\begin_layout Section
+Descripción y Análisis de Resultados
+\end_layout
+
+\begin_layout Subsection
+Aranita
+\end_layout
+
+\begin_layout Subsubsection
+Calidad
+\end_layout
+
+\begin_layout Subsubsection
+Dificultades, Logros y Oportunidades
+\end_layout
+
+\begin_layout Subsubsection
+Extensiones
+\end_layout
+
+\begin_layout Subsection
+RSS Reader
+\end_layout
+
+\begin_layout Subsubsection
+Calidad
+\end_layout
+
+\begin_layout Subsubsection
+Dificultades, Logros y Oportunidades
+\end_layout
+
+\begin_layout Subsubsection
+ExtensionesExpresiones en XQuery y las RegEx que le utiliza en la solución
+ 
+\end_layout
+
+\begin_layout Standard
+El algoritmo básico para resolver cada uno de los retos, de manera que puedan
+ percibirse los elementos interesantes para poner en valor en la solución
+ 
+\end_layout
+
+\begin_layout Standard
+Análisis de resultados obtenidos , dificultades, logros y posibilidades
+ de generalización de la solución .
+ Analice la calidad de los resultados obtenidos desde el punto de vista
+ de la información entregada al usuario.
+ Analice problemas encontrados, mejoras posibles, retos por resolver para
+ hacer un mejor trabajo de entrega (delivery) de información al usuario.
+ Proponga posibles e xtensiones de valor agregado.
+ 
+\end_layout
+
+\begin_layout Standard
+Analice en qué cambia su solución si se quiere construir el directorio completo
+ de la Universidad, incluyendo personal administrativo, de laboratorio y
+ estudiantes referenciados en dichas páginas .
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintAll"
+bibfiles "apa6-SampleBibliography"
+options "apalike"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
