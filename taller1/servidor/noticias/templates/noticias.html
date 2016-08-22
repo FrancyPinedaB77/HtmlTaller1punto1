@@ -1,0 +1,45 @@
+{% load staticfiles %}
+
+<head>
+  <h1>Notitas: Tu portal de noticias (?)</h1>
+</head>
+
+<body>
+
+  <nav>
+    <form action="" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="Enviar" />
+    </form>
+  </nav>
+
+  <div class="container">
+    <link rel="stylesheet" type="text/css" href={% static 'style.css' %}>
+    <div class="column-left">
+      <h2> Noticias sin filtrar</h2>
+      <ul>
+	{% for news in newslist %}
+	<li> <a href={{news.url}}> {{ news.title }} </a> </li>
+	{% endfor %}
+      </ul>
+    </div>
+    <div class="column-center">
+      <h2>Noticias Regex</h2>
+      <ul>
+	{% for news in regexlist %}
+	<li> <a href={{news.url}}> {{ news.title }} </a> </li>
+	{% endfor %}
+      </ul>
+    </div>
+    <div class="column-right">
+      <h2>Noticias XQuery</h2>
+      <ul>
+	{% for news in xquerylist %}
+	<li> <a href={{news.url}}> {{ news.title }} </a> {{ news.date }}</li>
+	{% endfor %}
+      </ul>
+    </div>
+  </div>
+
+</body>
