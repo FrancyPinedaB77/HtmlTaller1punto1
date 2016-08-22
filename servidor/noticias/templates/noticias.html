@@ -36,7 +36,7 @@
       <h2>Noticias XQuery</h2>
       <ul>
 	{% for news in xquerylist %}
-	<li> <a href={{news.url}}> {{ news.title }} </a> {{ news.date }}</li>
+	<li>{{ news.title }}: {{ news.date }} <a href={{ news.url }}>{{ news.url }}</a></li>
 	{% endfor %}
       </ul>
     </div>
