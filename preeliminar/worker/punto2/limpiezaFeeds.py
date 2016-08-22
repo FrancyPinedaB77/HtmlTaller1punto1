@@ -24,5 +24,5 @@ for df in doc.xpath('//item'):
     else: SubElement(item,'category').text = df.getparent().find('title').text
     i+=1
 outFile = open(name, 'wb')
-ElementTree(root).write(outFile, xml_declaration=True, encoding='utf-16') 
+ElementTree(root).write(outFile, xml_declaration=False, encoding='utf-8') 
 outFile.close()
