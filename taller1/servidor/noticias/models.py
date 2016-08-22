@@ -4,16 +4,21 @@ import paramiko
 
 # Create your models here.
 
+GETNEWS = "cat data_full.xml"
+SEARCH = "python filter.py \"{}\" {}"
+
+WORKER = '????'
+USER = '????'
+PASS = '????'
+
+ssh = paramiko.SSHClient()
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh.connect(WORKER, username=USER, password=PASS)
+
 def run(command):
-    print(command)
-    try:
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect('????', username='????', password='????')
-        stdin, stdout, stderr = ssh.exec_command(command)
-        return(stdout.read())
-    finally:
-        ssh.close()
+    print("Running over ssh:", command)
+    stdin, stdout, stderr = ssh.exec_command(command)
+    return(stdout.read())
     
 class News(object):
     def __init__(self, code, title, date, url):
@@ -24,17 +29,15 @@ class News(object):
 
 class NewsReader(object):
     def __init__(self, path):
-        xml = run("cat " + path)
+        xml = run(GETNEWS)
         doc = xmltodict.parse(xml)
-    
         self.news = []
         for item in doc['resultados']['item']:
             myNews = News(item['id'], item['titulo'], item['fecha'], item['link'])
             self.news.append(myNews)
 
     def filter(self, string, kind):
-        ids = run("python filter.py \"{}\" {}".format(string, kind))
-        print(ids.split(b'\n'))
+        ids = run(SEARCH.format(string, kind))
         ids = [int(x) for x in ids.split(b'\n')[:-1]]
         filtered = []
         for news in self.news:
