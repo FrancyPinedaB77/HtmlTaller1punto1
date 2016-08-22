@@ -4,8 +4,8 @@ import paramiko
 
 # Create your models here.
 
-GETNEWS = "cat data_full.xml"
-SEARCH = "python filter.py \"{}\" {}"
+GETNEWS = "sh ~/AnalisisBigDataTaller1/worker/punto2/descargaParalela.sh; cat data_full.xml"
+SEARCH =  "sh ~/AnalisisBigDataTaller1/worker/punto2/busqueda.sh -i -o {} {}"
 
 WORKER = '????'
 USER = '????'
@@ -21,11 +21,12 @@ def run(command):
     return(stdout.read())
     
 class News(object):
-    def __init__(self, code, title, date, url):
+    def __init__(self, code, title, date, url, description):
         self.code = int(code)
         self.title = title
         self.date = date
         self.url = url
+        self.description = description
 
 class NewsReader(object):
     def __init__(self, path):
@@ -34,7 +35,7 @@ class NewsReader(object):
         self.news = []
         for feed in doc['resultados']['feed']:
             for item in feed['item']:
-                myNews = News(item['id'], item['titulo'], item['fecha'], item['link'])
+                myNews = News(item['id'], item['title'], item['pubDate'], item['link'], item['description'])
                 self.news.append(myNews)
 
     def filter(self, string, kind):
