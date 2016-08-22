@@ -32,12 +32,13 @@ class NewsReader(object):
         xml = run(GETNEWS)
         doc = xmltodict.parse(xml)
         self.news = []
-        for item in doc['resultados']['item']:
-            myNews = News(item['id'], item['titulo'], item['fecha'], item['link'])
-            self.news.append(myNews)
+        for feed in doc['resultados']['feed']:
+            for item in feed['item']:
+                myNews = News(item['id'], item['titulo'], item['fecha'], item['link'])
+                self.news.append(myNews)
 
     def filter(self, string, kind):
-        ids = run(SEARCH.format(string, kind))
+        ids = run(SEARCH.format(kind, string))
         ids = [int(x) for x in ids.split(b'\n')[:-1]]
         filtered = []
         for news in self.news:

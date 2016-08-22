@@ -10,7 +10,7 @@ def index(request):
     if request.method == 'POST': 
         form = SearchForm(request.POST)
         if form.is_valid():
-            regexlist = newsReader.filter(form.cleaned_data['search'],form.cleaned_data['kind'])
+            regexlist = newsReader.filter(form.cleaned_data['search'], form.cleaned_data['kind'])
             xquerylist = regexlist
     else:
         form = SearchForm()
