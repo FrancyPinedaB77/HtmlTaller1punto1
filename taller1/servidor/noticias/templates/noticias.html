@@ -1,0 +1,43 @@
+{% load staticfiles %}
+
+<head>
+  <h1>Notitas: Tu portal de noticias (?)</h1>
+</head>
+
+<body>
+
+  <nav>
+    <form action="" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="Enviar" />
+    </form>
+  </nav>
+
+  <div class="container">
+    <link rel="stylesheet" type="text/css" href={% static 'style.css' %}>
+    <div class="column-left">
+      <h2> Noticias sin filtrar</h2>
+      <ul>
+	{% for news in newslist %}
+	<li> <a href={{news.url}}> {{ news.title }} </a> </li>
+	{% endfor %}
+      </ul>
+    </div>
+    <div class="column-center">
+      <h2>Noticias Regex</h2>
+      <ul>
+	{% for news in filterlist %}
+	<li> <a href={{news.url}}> {{ news.title }} </a> </li>
+	{% endfor %}
+      </ul>
+    </div>
+    <div class="column-right">
+      <h2>Noticias XQuery</h2>
+      Jelly macaroon toffee. I love I love brownie soufflé sweet roll macaroon icing oat cake. Gummi bears jujubes sweet roll I love lollipop bear claw. Fruitcake marshmallow muffin pastry sweet roll dessert muffin. Cake fruitcake candy canes lemon drops gummies. Soufflé croissant ice cream halvah caramels sesame snaps apple pie. Icing I love jujubes cake halvah jelly biscuit marshmallow. Ice cream topping jelly. Cupcake cookie bonbon danish sweet croissant apple pie I love icing. Chocolate cake sweet jujubes chocolate cake dragée. Marzipan tiramisu I love soufflé biscuit lollipop candy ice cream chocolate. Carrot cake pudding oat cake I love gingerbread danish brownie halvah dessert. Cookie sweet roll sweet macaroon chupa chups I love topping croissant.
+
+      I love brownie halvah muffin. Biscuit jujubes lollipop biscuit jelly beans sugar plum chupa chups candy liquorice. I love I love jujubes chocolate bar marshmallow chocolate cake I love donut sesame snaps. Croissant I love cupcake. I love cake cake danish tiramisu. Gummi bears donut soufflé gummi bears. Cotton candy dragée jelly halvah cookie oat cake candy. Sugar plum toffee chocolate biscuit tart oat cake chocolate. Tiramisu oat cake muffin cheesecake macaroon sugar plum I love. Chocolate sesame snaps pastry dessert cupcake ice cream jelly-o. Toffee I love bear claw sweet roll pastry sweet roll jelly-o I love oat cake. Topping marshmallow oat cake bonbon candy canes chocolate bar jelly icing danish.
+    </div>
+  </div>
+
+</body>

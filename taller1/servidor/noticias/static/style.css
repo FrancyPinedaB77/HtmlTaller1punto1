@@ -1,0 +1,4 @@
+.column-left{ float: left; width: 25%; }
+.column-right{ float: right; width: 50%; }
+.column-center{ display: inline-block; width: 25%; }
+
