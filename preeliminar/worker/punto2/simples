@@ -1,5 +1,0 @@
-for $x in doc("db_feed.xml")/resultados/feed/item
-where (contains(lower-case($x/description),lower-case('bmx')))    
-return data($x/description)
-
-
