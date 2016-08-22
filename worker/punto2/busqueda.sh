@@ -1,5 +1,6 @@
 #!bin/bash
 OPTIND=1
+p=/home/estudiante/AnalisisBigDataTaller1/worker/punto2
 
 #opciones de comando
 ignore_case=""
@@ -13,7 +14,7 @@ while getopts "uio" opt; do
   esac
 done
 
-query="for \$x in doc(\"db_feed.xml\")//item\n"
+query="for \$x in doc(\"$p/db_feed.xml\")//item\n"
 #campo de busqueda
 campo=${!OPTIND}
 OPTIND=$OPTIND+1
@@ -24,9 +25,11 @@ case $campo in
   "description"|"title")
     query+="where("
     for i in $(seq $OPTIND $(($# - 1)))
-      do query+="contains($ignore_case(\$x/$campo),$ignore_case(\"${!i}\"))"$log_op
+      do 
+query+="contains($ignore_case(\$x/$campo),$ignore_case(\"${!i}\"))"$log_op
     done
-    query+="contains($ignore_case(\$x/$campo),$ignore_case(\"${@: -1}\"))"
+    query+="contains($ignore_case(\$x/$campo),$ignore_case(\"${@: 
+-1}\"))"
     query+=")\nreturn data(\$x/id)";;
 
      "category")  echo Vamos a buscar por categoria;;
