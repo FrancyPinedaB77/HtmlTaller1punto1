@@ -21,19 +21,24 @@ OPTIND=$OPTIND+1
 
 #construir la query segun el campo de busqueda
 case $campo in
-
-  "description"|"title")
-    query+="where("
-    for i in $(seq $OPTIND $(($# - 1)))
-      do 
-query+="contains($ignore_case(\$x/$campo),$ignore_case(\"${!i}\"))"$log_op
-    done
-    query+="contains($ignore_case(\$x/$campo),$ignore_case(\"${@: 
--1}\"))"
-    query+=")\nreturn data(\$x/id)";;
-
-     "category")  echo Vamos a buscar por categoria;;
-          "all")  echo Vamos a buscar en todas;;
+    
+    "description"|"title")
+        query+="where("
+        for i in $(seq $OPTIND $(($# - 1)))
+            do query+="contains($ignore_case(\$x/$campo),$ignore_case(\"${!i}\"))"$log_op
+        done
+        query+="contains($ignore_case(\$x/$campo),$ignore_case(\"${@: -1}\"))"
+        query+=")\nreturn data(\$x/id)";;
+    
+    "category")
+        query+="return\n(\n        for \$y in \$x/category\n        where ("
+        for i in $(seq $OPTIND $(($# - 1)))
+            do query+="contains($ignore_case(\$y),$ignore_case(\"${!i}\"))"$log_op
+        done
+        query+="contains($ignore_case(\$y),$ignore_case(\"${@: -1}\")))"
+        query+="return data(\$x/id)\n    )[1]";;
+    
+    "all")  echo Vamos a buscar en todas;;
               *)  echo $campo no es un Campo valido;exit 1;;
 esac
 echo -e $query > tmpfile
