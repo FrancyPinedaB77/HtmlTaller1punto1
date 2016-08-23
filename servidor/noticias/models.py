@@ -1,25 +1,15 @@
+import subprocess, xmltodict
+from os.path import realpath
 from django.db import models
-import xmltodict
-import paramiko
-
-# Create your models here.
-PATH = "~/AnalisisBigDataTaller1/worker/punto2/"
-GETNEWS = "sh "+PATH+"descargaParalela.sh; cat "+PATH+"db_feed.xml"
-XQUERY =  "sh "+PATH+"busqueda.sh -i -o {} {}"
-
-WORKER = '????'
-USER = '????'
-PASS = '????'
-
-ssh = paramiko.SSHClient()
-ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-ssh.connect(WORKER, username=USER, password=PASS)
 
 def run(command):
-    print("Running over ssh:", command)
-    stdin, stdout, stderr = ssh.exec_command(command)
-    return(stdout.read())
-    
+    subp = subprocess.Popen([command], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = subp.communicate()
+    return(out)
+
+PATH = realpath('./bin')
+XQUERY = 'sh {}/busqueda.sh'.format(PATH) + ' -i -o {} {}'
+
 class News(object):
     def __init__(self, code, title, date, url, description):
         self.code = int(code)
@@ -33,8 +23,7 @@ class NewsReader(object):
         self.get_news()
         
     def get_news(self):
-        xml = run(GETNEWS)
-        doc = xmltodict.parse(xml)
+        doc = xmltodict.parse(open('{}/db_feed.xml'.format(PATH),'r').read())
         self.news = []
         for feed in doc['resultados']['feed']:
             for item in feed['item']:
