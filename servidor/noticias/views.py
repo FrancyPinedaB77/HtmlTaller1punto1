@@ -1,11 +1,15 @@
 from django.shortcuts import render
 from . import models
 from .forms import SearchForm
-
+from time import time
 # Create your views here.
 
+newsReader = models.NewsReader()
+now = int(time())
+
 def index(request):
-    newsReader = models.NewsReader()
+    if(now - int(time() % 60 == 0):
+       newsReader.get_news()
     regexlist = [] # Lista de noticias filtradas con regex
     xquerylist = [] # Lista de noticias filtradas con xquery
     if request.method == 'POST': 
