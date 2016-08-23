@@ -1,6 +1,6 @@
 #!bin/bash
 OPTIND=1
-p=$(dirname $(realpath -s $0))
+p=$(dirname $(readlink -e -s $0))
 
 #opciones de comando
 ignore_case=""

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-p=$(dirname $(realpath -s $0))
+p=$(dirname $(readlink -e -s $0))
 PARAMS_DESCARGA=''
 FEEDS=''
 n=0
