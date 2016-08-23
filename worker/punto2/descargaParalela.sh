@@ -1,6 +1,6 @@
 #!/bin/bash
 
-p=/home/estudiante/AnalisisBigDataTaller1/worker/punto2
+p=$(dirname $(realpath -s $0))
 PARAMS_DESCARGA=''
 FEEDS=''
 n=0

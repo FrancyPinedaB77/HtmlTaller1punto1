@@ -1,6 +1,6 @@
 #!bin/bash
 OPTIND=1
-p=/home/estudiante/AnalisisBigDataTaller1/worker/punto2
+p=$(dirname $(realpath -s $0))
 
 #opciones de comando
 ignore_case=""
