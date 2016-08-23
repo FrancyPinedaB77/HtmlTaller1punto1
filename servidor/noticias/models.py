@@ -14,7 +14,7 @@ class News(object):
     def __init__(self, code, title, date, url, description):
         self.code = int(code)
         self.title = title
-        self.date = date
+        self.date = date[4:-5]
         self.url = url
         self.description = description
 
