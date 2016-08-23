@@ -3,9 +3,9 @@ import xmltodict
 import paramiko
 
 # Create your models here.
-
-GETNEWS = "sh ~/AnalisisBigDataTaller1/worker/punto2/descargaParalela.sh; cat data_full.xml"
-SEARCH =  "sh ~/AnalisisBigDataTaller1/worker/punto2/busqueda.sh -i -o {} {}"
+PATH = "~/AnalisisBigDataTaller1/worker/punto2/"
+GETNEWS = "sh "+PATH+"descargaParalela.sh; cat "+PATH+"db_feed.xml"
+XQUERY =  "sh "+PATH+"busqueda.sh -i -o {} {}"
 
 WORKER = '????'
 USER = '????'
@@ -29,7 +29,10 @@ class News(object):
         self.description = description
 
 class NewsReader(object):
-    def __init__(self, path):
+    def __init__(self):
+        self.get_news()
+        
+    def get_news(self):
         xml = run(GETNEWS)
         doc = xmltodict.parse(xml)
         self.news = []
@@ -37,12 +40,13 @@ class NewsReader(object):
             for item in feed['item']:
                 myNews = News(item['id'], item['title'], item['pubDate'], item['link'], item['description'])
                 self.news.append(myNews)
-
-    def filter(self, string, kind):
-        ids = run(SEARCH.format(kind, string))
+        
+    def filter_xquery(self, string, kind):
+        ids = run(XQUERY.format(kind, string))
         ids = [int(x) for x in ids.split(b'\n')[:-1]]
         filtered = []
         for news in self.news:
             if news.code in ids:
                 filtered.append(news)
         return filtered
+
