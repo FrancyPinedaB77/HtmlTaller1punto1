@@ -5,11 +5,16 @@ from time import time
 # Create your views here.
 
 newsReader = models.NewsReader()
-now = int(time())
+last  = int(time())
 
 def index(request):
-    if(now - int(time() % 60 == 0):
-       newsReader.get_news()
+    global last
+    now = int(time())
+    if (now - last) > 60:
+        print(now - last, "seconds since last update... Updating")
+        newsReader.get_news()
+    else:
+       print(now - last, "seconds since last update... Not updating")
     regexlist = [] # Lista de noticias filtradas con regex
     xquerylist = [] # Lista de noticias filtradas con xquery
     if request.method == 'POST': 
