@@ -1,4 +1,4 @@
-import subprocess, xmltodict
+import subprocess, xmltodict, re
 from os.path import realpath
 from django.db import models
 
@@ -31,6 +31,8 @@ class NewsReader(object):
                 self.news.append(myNews)
         
     def filter_xquery(self, string, kind):
+        self.get_news()
+        string = re.sub(r'([^\s\w]|_)+', '', string)
         ids = run(XQUERY.format(kind, string))
         ids = [int(x) for x in ids.split(b'\n')[:-1]]
         filtered = []
