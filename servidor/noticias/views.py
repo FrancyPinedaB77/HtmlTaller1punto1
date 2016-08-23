@@ -5,13 +5,14 @@ from time import time
 # Create your views here.
 
 newsReader = models.NewsReader()
-last  = int(time())
+last = int(time())
 
 def index(request):
     global last
     now = int(time())
     if (now - last) > 60:
         print(now - last, "seconds since last update... Updating")
+        last = now
         newsReader.get_news()
     else:
        print(now - last, "seconds since last update... Not updating")
