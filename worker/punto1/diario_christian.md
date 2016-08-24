@@ -92,3 +92,11 @@ Se filtraron estos links porque todas las unidades parecen tener un link a su p�
 | Facultad de Educación |  http://cife.uniandes.edu.co  | No |
 | Facultad de Ingeniería |  http://ingenieria.uniandes.edu.co/Paginas/Eventos.aspx  | Si |
 | Facultad de Medicina |  http://medicina.uniandes.edu.co/index.php/es/facultad/eventos/proximos.display/2016/08/23/-  | Si |
+
+### Agosto 24 12:12
+
+He encontrado que varios de los links a las páginas de eventos suelen tener cadenas como: `day.listevents`, `month.listevents` y `year.listevents` o tambien el análogo con `.calendar`. Si nos quedamos con `year.listevents` o `year.calendar` esto nos redirige a todos los eventos del año. Con la siguiente expresión regular podemos filtrar todas las urls que sean de esta forma
+```
+(http://.+/)(day|month|year)\.(listevents|calendar)
+```
+Debe ser mas sencillo extraer aquellos links que son de la forma `http://.../(noticias-y-)eventos(.aspx)` pero eso lo haré luego
