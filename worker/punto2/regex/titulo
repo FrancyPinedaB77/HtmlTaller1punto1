@@ -1,0 +1,4 @@
+Busqueda para el o
+<item><id>(\d+)</id><title>[^<]*(mario|mariana)[^<]*</title>
+Busuqeda para el y
+<item><id>(\d+)</id><title>[^<]*oro[^<]*bmx[^<]*</title>
