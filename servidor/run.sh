@@ -8,7 +8,7 @@ exit
 trap "onINT" SIGINT
 python grab.py &
 command1PID="$!"
-python manage.py runserver
+python manage.py runserver 0.0.0.0:8080
 echo Done
 
 
