@@ -28,8 +28,8 @@ case $campo in
         queryOr+="where("
         for i in $(seq $OPTIND $(($# - 1)))
             do
-                queryAnd+="contains($ignore_case(\$x/$campo),$ignore_case(\"${!i}\")) and "
-                queryOr+="contains($ignore_case(\$x/$campo),$ignore_case(\"${!i}\")) or "
+            queryAnd+="contains($ignore_case(\$x/$campo),$ignore_case(\"${!i}\")) and "
+            queryOr+="contains($ignore_case(\$x/$campo),$ignore_case(\"${!i}\")) or "
         done
         queryAnd+="contains($ignore_case(\$x/$campo),$ignore_case(\"${@: -1}\"))"
         queryOr+="contains($ignore_case(\$x/$campo),$ignore_case(\"${@: -1}\"))"
@@ -49,7 +49,32 @@ case $campo in
         queryAnd+="return data(\$x/id)\n    )[1]"
         queryOr+="return data(\$x/id)\n    )[1]";;
     
-    "all")  echo Vamos a buscar en todas;;
+    "all")
+        queryOr+="where ("
+        queryAnd+="where ("
+        for i in $(seq $OPTIND $(($# - 1)))
+            do
+            queryOr+="contains($ignore_case(\$x/title),$ignore_case(\"${!i}\")) or \n"
+            queryAnd+="contains($ignore_case(\$x/title),$ignore_case(\"${!i}\")) and \n"
+            queryOr+="contains($ignore_case(\$x/description),$ignore_case(\"${!i}\")) or \n"
+            queryAnd+="contains($ignore_case(\$x/description),$ignore_case(\"${!i}\")) and \n"
+            queryOr+="not(empty(\n"
+            queryOr+="for \$y in \$x/category \n"
+            queryOr+="where (contains($ignore_case(\$y),$ignore_case(\"${!i}\")))\n"
+            queryOr+="return data(\$x/id)\n"
+            queryOr+=")) or \n"
+        done
+        queryOr+="contains($ignore_case(\$x/title),$ignore_case(\"${@: -1}\")) or \n"
+        queryAnd+="contains($ignore_case(\$x/title),$ignore_case(\"${@: -1}\")) and \n"
+        queryOr+="contains($ignore_case(\$x/description),$ignore_case(\"${@: -1}\")) or \n"
+        queryAnd+="contains($ignore_case(\$x/description),$ignore_case(\"${@: -1}\")) \n"
+        queryOr+="not(empty(\n"
+        queryOr+="for \$y in \$x/category \n"
+        queryOr+="where (contains($ignore_case(\$y),$ignore_case(\"${@: -1}\")))\n"
+        queryAnd+=")\n"
+        queryOr+="return data(\$x/id)\n)))\nreturn data(\$x/id)"
+        queryAnd+="return data(\$x/id)";;
+
     *)  echo $campo no es un Campo valido;exit 1;;
 esac
 echo -e $queryAnd > tmpfileAnd
@@ -57,4 +82,4 @@ echo -e $queryOr > tmpfileOr
 xqilla tmpfileAnd > and
 xqilla tmpfileOr > or
 cat and or |  awk '!x[$0]++'
-rm  tmpfileAnd tmpfileOr and or
+#rm  tmpfileAnd tmpfileOr and or
