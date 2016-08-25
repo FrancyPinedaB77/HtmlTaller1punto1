@@ -1,7 +1,8 @@
 from urllib import request
 import re, datetime
+from threading import Thread
 
-TIMEOUT = 1000
+TIMEOUT = 100
 
 def timestamp():
     return '[{}]'.format(datetime.datetime.utcnow())
@@ -13,6 +14,7 @@ def get_url(url, try_hard=False):
             response = request.urlopen(url, timeout = TIMEOUT)
         else:
             response = request.urlopen(url)
+        print(timestamp(), 'Succesfully got', url)
         return response.read().decode()
     except:
         print(timestamp(), 'Error: Couldn\'t get', url)
@@ -52,6 +54,7 @@ class Unit(object):
             self.concat_links = '\n'.join(self.links)
 
     def get_events_link(self):
+        self.get_links()
         calendar = self.get_calendar()
         basic = self.get_basic()
         if calendar:
@@ -61,7 +64,8 @@ class Unit(object):
             print(timestamp(), '{} unit found links to events at {}'.format(self, basic))
             return basic
         else:
-            print(timestamp(), 'Error: {} unit did not found events link'.format(self))
+            for link in self.links:
+                print(timestamp(), '{} unit found possible candidate {}'.format(self, link))
     
     def __str__(self):
         return(self.name)
@@ -75,12 +79,14 @@ class Spidy(object):
     def get_units(self):
         units = re.findall('<li><a\s+href="https?://([^"]+uniandes\.edu\.co)[^"]*"\s+[^>]*>([^<]*(Facultad|Centro|Escuela|Departamento)[^<]*)</a></li>', self.root_page)
         units = list(set([i[:2] for i in units]))
-        units.sort(key=lambda i: i[1])
-        self.units = [Unit(name, 'http://'+url) for (url, name) in units]
+        units.sort(key=lambda i: i[1])       
+        for unit in units:
+            new_unit = Unit(unit[1], 'http://'+unit[0])
+            if new_unit and new_unit.webpage:
+                self.units.append(new_unit)
 
     def get_all_links(self):
         for unit in self.units:
-            unit.get_links()
             unit.get_events_link()
 
 my_spidy = Spidy('http://uniandes.edu.co/institucional/facultades/facultades')
