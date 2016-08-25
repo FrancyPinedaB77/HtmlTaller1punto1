@@ -82,4 +82,4 @@ echo -e $queryOr > tmpfileOr
 xqilla tmpfileAnd > and
 xqilla tmpfileOr > or
 cat and or |  awk '!x[$0]++'
-#rm  tmpfileAnd tmpfileOr and or
+rm  tmpfileAnd tmpfileOr and or
