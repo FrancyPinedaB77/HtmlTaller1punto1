@@ -5,7 +5,7 @@ from django.db import models
 def run(command):
     subp = subprocess.Popen([command], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = subp.communicate()
-    return(out)
+    return out
 
 PATH = realpath('./bin')
 XQUERY = 'sh {}/busqueda.sh'.format(PATH) + ' -i {} {}'
@@ -36,8 +36,9 @@ class NewsReader(object):
         ids = run(XQUERY.format(kind, string))
         ids = [int(x) for x in ids.split(b'\n')[:-1]]
         filtered = []
-        for news in self.news:
-            if news.code in ids:
-                filtered.append(news)
+        for code in ids:
+            for news in self.news:
+                if news.code == code:
+                    filtered.append(news)
         return filtered
 
