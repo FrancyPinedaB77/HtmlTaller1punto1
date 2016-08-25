@@ -53,12 +53,12 @@ href=["\']([^\'"]*([Ee]ventos|icagenda|icalrepeat)[^\'"]*)["\']
 ```
 Se filtraron estos links porque todas las unidades parecen tener un link a su página de eventos de esta forma. Sin embargo, algunas unidades tienen mas de un link con estas caracteristicas. A continuación se encuentran los links a la página de eventos de cada unidad:
 
-#### Actualizada en Agosto 23, 18:51
+#### Actualizada en Agosto 25, 10:00
 | Unidad académica | URL de eventos | Se encontró |
 | ---------------- | -------------- | ----------- |
 | Centro Interdisciplinario de Estudios sobre Desarrollo (CIDER) |  http://cider.uniandes.edu.co/Paginas/Eventos.aspx  | Si |
 | Centro de Estudios en Periodismo - Ceper | Redirige a  http://eventos.uniandes.edu.co  | Si |
-| Departamento de Antropología |  http://antropologia.uniandes.edu.co/index.php/noticias-y-eventos  |
+| Departamento de Antropología |  http://antropologia.uniandes.edu.co/index.php/noticias-y-eventos  | Si |
 | Departamento de Arquitectura |  http://arquitectura.uniandes.edu.co/eventos/  | Request timeout (Si) |
 | Departamento de Arte |  http://arte.uniandes.edu.co/eventos/  | Si |
 | Departamento de Ciencia Politica |  https://c-politica.uniandes.edu.co/index.php/noticias-y-eventos  | Si |
@@ -97,6 +97,16 @@ Se filtraron estos links porque todas las unidades parecen tener un link a su p�
 
 He encontrado que varios de los links a las páginas de eventos suelen tener cadenas como: `day.listevents`, `month.listevents` y `year.listevents` o tambien el análogo con `.calendar`. Si nos quedamos con `year.listevents` o `year.calendar` esto nos redirige a todos los eventos del año. Con la siguiente expresión regular podemos filtrar todas las urls que sean de esta forma
 ```
-(http://.+/)(day|month|year)\.(listevents|calendar)
+(http://.+/)(cat|day|month|year)\.(listevents|calendar)
 ```
-Debe ser mas sencillo extraer aquellos links que son de la forma `http://.../(noticias-y-)eventos(.aspx)` pero eso lo haré luego
+Debe ser mas sencillo extraer aquellos links que son de la forma `http://.../(...)eventos(.aspx)` pero eso lo haré luego
+
+### Agosto 25 9:55
+
+Conseguí hacer descargas en paralelo de las páginas. Esto hace que nos demoremos menos en obtener la información que necesitamos. Aun necesito pensar que pasa con las páginas que dan timeout (arquitectura y diseño), y si definitivamente van a fallar de forma intermitente, que hacer con la aplicación.
+
+Despues de reorganizar el código pude extraer los links de la forma que mencioné al final. Habiendo hecho esto hay que probar si todos los liinks estraidos son los correctos.
+
+Verificando encontré que el departamento de química redirige su página http://quimica.uniandes.edu.co a https://quimicapr.uniandes.edu.co por un script en JS escrito en la primera página. Ahora puedo seguir esas redirecciones.
+
+Finalmente pude extraer todas las páginas de eventos. Ahora hay que trabajar en como extraer los eventos de las páginas de eventos de cada departamento

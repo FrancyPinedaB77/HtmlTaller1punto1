@@ -1,8 +1,8 @@
-from urllib import request
+import requests
 import re, datetime
 from threading import Thread
 
-TIMEOUT = 100
+TIMEOUT = 10
 
 def timestamp():
     return '[{}]'.format(datetime.datetime.utcnow())
@@ -11,26 +11,30 @@ def get_url(url, try_hard=False):
     print(timestamp(), 'Trying to get', url)
     try:
         if try_hard:
-            response = request.urlopen(url, timeout = TIMEOUT)
+            response = requests.get(url, timeout = TIMEOUT).text
         else:
-            response = request.urlopen(url)
+            response = requests.get(url).text
+        response[0]
         print(timestamp(), 'Succesfully got', url)
-        return response.read().decode()
+        return response
     except:
         print(timestamp(), 'Error: Couldn\'t get', url)
 
 class Unit(object):
-    def __init__(self, name, url):
+    def __init__(self, name, url, webpage):
         self.name = name
         self.url = url
-        self.webpage = get_url(self.url, try_hard=True)
+        self.webpage = webpage
         self.links = []
         self.concat_links = ''
 
     def get_calendar(self):
-        match = re.findall('(http://.+/)(cat|day|month|year)\.(listevents|calendar)', self.concat_links)
+        match = re.findall('(https?://.+/)(cat|day|month|year)([\._](listevents|calendar))', self.concat_links)
         if len(match) > 0:
-            return match[0][0]+'year.'+match[0][2]+'/'
+            return match[0][0]+'year'+match[0][2]+'/'
+        match = re.findall('(https?://.+task=)(year|month|day)\.listevents', self.concat_links)
+        if len(match) > 0:
+            return match[0][0]+'year.listevents'
         return None
 
     def get_basic(self):
@@ -46,11 +50,16 @@ class Unit(object):
 
     def get_links(self):
         self.links = re.findall('href=["\']([^\'"]*([Ee]ventos?|noticias|icagenda|icalrepeat|listevents)[^\'"]*)["\']', self.webpage)
+        self.links = [self.fix_relative(i[0]) for i in self.links]
+        clean_links = []
+        for link in self.links:
+            if ('eventos.uniandes' not in link) and ('uniandes' in link):
+                clean_links.append(link)
+        self.links = clean_links
         if len(self.links) == 0:
             print(timestamp(), 'Error: {} unit didn\'t found any links'.format(self))
         else:
-            self.links.sort(key=lambda i: len(i[0]))
-            self.links = [self.fix_relative(i[0]) for i in self.links]
+            self.links.sort(key=lambda i: len(i))
             self.concat_links = '\n'.join(self.links)
 
     def get_events_link(self):
@@ -77,14 +86,40 @@ class Spidy(object):
         self.units = []
         
     def get_units(self):
-        units = re.findall('<li><a\s+href="https?://([^"]+uniandes\.edu\.co)[^"]*"\s+[^>]*>([^<]*(Facultad|Centro|Escuela|Departamento)[^<]*)</a></li>', self.root_page)
-        units = list(set([i[:2] for i in units]))
-        units.sort(key=lambda i: i[1])       
-        for unit in units:
-            new_unit = Unit(unit[1], 'http://'+unit[0])
-            if new_unit and new_unit.webpage:
-                self.units.append(new_unit)
+        matches = re.findall('<li><a\s+href="https?://([^"]+uniandes\.edu\.co)[^"]*"\s+[^>]*>([^<]*(Facultad|Centro|Escuela|Departamento)[^<]*)</a></li>', self.root_page)
+        matches = list(set([i[:2] for i in matches]))
+        matches.sort(key=lambda i: i[1])
 
+        names = []
+        urls = []
+        pages = []
+        threads = []
+        
+        for match in matches:
+            urls.append('http://'+match[0])
+            names.append(match[1])
+            pages.append(None)
+            threads.append(None)
+
+        def f(i, pages):
+            pages[i] = get_url(urls[i], try_hard=True)
+            match = re.findall('location.href="(https?://[^"]+)"', pages[i])
+            if len(match) > 0:
+                print(timestamp(), 'Found redirection from {} to {}'.format(urls[i], match[0]))
+                urls[i] = match[0]
+                pages[i] = get_url(urls[i], try_hard=True)
+
+        for i in range(len(threads)):
+            threads[i] = Thread(target=f, args=(i, pages))
+            threads[i].start()
+
+        for thread in threads:
+            thread.join()
+
+        for name, url, page in zip(names, urls, pages):
+            if page:
+                self.units.append(Unit(name, url, page))
+                
     def get_all_links(self):
         for unit in self.units:
             unit.get_events_link()
