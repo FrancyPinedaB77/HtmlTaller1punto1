@@ -6,15 +6,16 @@ p=$(dirname $(readlink -e -s $0))
 ignore_case=""
 update=0
 log_op=" and "
-while getopts "uio" opt; do
+while getopts "ui" opt; do
   case $opt in
     u)update=1;;
     i)ignore_case="lower-case";;
-    o)log_op=" or "
   esac
 done
 
-query="for \$x in doc(\"$p/db_feed.xml\")//item\n"
+queryAnd="for \$x in doc(\"$p/db_feed.xml\")//item\n"
+queryOr="$queryAnd"
+
 #campo de busqueda
 campo=${!OPTIND}
 OPTIND=$OPTIND+1
@@ -23,24 +24,37 @@ OPTIND=$OPTIND+1
 case $campo in
     
     "description"|"title")
-        query+="where("
+        queryAnd+="where("
+        queryOr+="where("
         for i in $(seq $OPTIND $(($# - 1)))
-            do query+="contains($ignore_case(\$x/$campo),$ignore_case(\"${!i}\"))"$log_op
+            do
+                queryAnd+="contains($ignore_case(\$x/$campo),$ignore_case(\"${!i}\")) and "
+                queryOr+="contains($ignore_case(\$x/$campo),$ignore_case(\"${!i}\")) or "
         done
-        query+="contains($ignore_case(\$x/$campo),$ignore_case(\"${@: -1}\"))"
-        query+=")\nreturn data(\$x/id)";;
+        queryAnd+="contains($ignore_case(\$x/$campo),$ignore_case(\"${@: -1}\"))"
+        queryOr+="contains($ignore_case(\$x/$campo),$ignore_case(\"${@: -1}\"))"
+        queryAnd+=")\nreturn data(\$x/id)"
+        queryOr+=")\nreturn data(\$x/id)";;
     
     "category")
-        query+="return\n(\n        for \$y in \$x/category\n        where ("
+        queryAnd+="return\n(\n        for \$y in \$x/category\n        where ("
+        queryOr+="return\n(\n        for \$y in \$x/category\n        where ("
         for i in $(seq $OPTIND $(($# - 1)))
-            do query+="contains($ignore_case(\$y),$ignore_case(\"${!i}\"))"$log_op
+            do
+            queryAnd+="contains($ignore_case(\$y),$ignore_case(\"${!i}\")) and "
+            queryOr+="contains($ignore_case(\$y),$ignore_case(\"${!i}\")) or "
         done
-        query+="contains($ignore_case(\$y),$ignore_case(\"${@: -1}\")))"
-        query+="return data(\$x/id)\n    )[1]";;
+        queryAnd+="contains($ignore_case(\$y),$ignore_case(\"${@: -1}\")))"
+        queryOr+="contains($ignore_case(\$y),$ignore_case(\"${@: -1}\")))"
+        queryAnd+="return data(\$x/id)\n    )[1]"
+        queryOr+="return data(\$x/id)\n    )[1]";;
     
     "all")  echo Vamos a buscar en todas;;
-              *)  echo $campo no es un Campo valido;exit 1;;
+    *)  echo $campo no es un Campo valido;exit 1;;
 esac
-echo -e $query > tmpfile
-xqilla tmpfile
-rm tmpfile
+echo -e $queryAnd > tmpfileAnd
+echo -e $queryOr > tmpfileOr
+xqilla tmpfileAnd > and
+xqilla tmpfileOr > or
+cat and or |  awk '!x[$0]++'
+rm  tmpfileAnd tmpfileOr and or

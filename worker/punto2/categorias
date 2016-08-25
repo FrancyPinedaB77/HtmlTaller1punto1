@@ -1,7 +1,0 @@
-for $x in doc("db_feed.xml")/resultados/feed/item
-    return
-    (
-        for $y in $x/category 
-        where (contains(lower-case($y),lower-case('mAriana')))    
-        return data($x/id)
-    )[1]
