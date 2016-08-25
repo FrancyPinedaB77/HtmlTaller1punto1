@@ -8,7 +8,7 @@ def run(command):
     return(out)
 
 PATH = realpath('./bin')
-XQUERY = 'sh {}/busqueda.sh'.format(PATH) + ' -i -o {} {}'
+XQUERY = 'sh {}/busqueda.sh'.format(PATH) + ' -i {} {}'
 
 class News(object):
     def __init__(self, code, title, date, url, description):
