@@ -1,0 +1,1 @@
+<item><id>(\d+)</id>(<[^>]+>[^<]+</[^>]+>){4}(<category>[^<]+</category>)*(<category>[^<]*(quijote|muertos)[^<]*</category>)+(<category>[^<]+</category>)*
