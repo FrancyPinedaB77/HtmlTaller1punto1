@@ -110,3 +110,7 @@ Despues de reorganizar el código pude extraer los links de la forma que mencion
 Verificando encontré que el departamento de química redirige su página http://quimica.uniandes.edu.co a https://quimicapr.uniandes.edu.co por un script en JS escrito en la primera página. Ahora puedo seguir esas redirecciones.
 
 Finalmente pude extraer todas las páginas de eventos. Ahora hay que trabajar en como extraer los eventos de las páginas de eventos de cada departamento
+
+### Agosto 26 11:56
+
+Estuve intentando extraer los links de eventos desde las páginas de los calendarios. Hasta el momento lo he logrado con Administración, Econiomía y Física. Tiene buena pinta pero me preocupa un poco tener que cambiar de página para ver mas eventos. Estoy pensando si será mejor pasar de `year.calendar` a `month.calendar` y sacar solo los del mes
