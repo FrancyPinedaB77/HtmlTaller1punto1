@@ -1,13 +1,15 @@
 import requests
 import re, datetime
 from threading import Thread
+from lxml import html
 
 TIMEOUT = 10
 CALENDAR = 'CALENDAR'
 BASIC = 'BASIC'
+DATE = datetime.datetime.now().strftime('%Y/%m/%d')
 
 def timestamp():
-    return '[{}]'.format(datetime.datetime.utcnow())
+    return '[{}]'.format(datetime.datetime.now())
 
 def get_url(url, try_hard=False):
     print(timestamp(), 'Trying to get', url)
@@ -23,14 +25,20 @@ def get_url(url, try_hard=False):
         print(timestamp(), 'Error: Couldn\'t get', url)
 
 class Events_site(object):
-    def __init__(self, url, kind):
+    def __init__(self, url, kind, unit):
         self.url = url
         self.webpage = get_url(self.url, try_hard=True)
         self.kind = kind
+        self.unit = unit
         self.get_events()
+
     def get_events(self):
         if self.kind == CALENDAR:
-            pass
+            tree = html.fromstring(self.webpage.encode())
+            x = tree.xpath('//td[@class="cal_td_daysnames"]/../..//ul//a[@class="ev_link_row"]')
+            for i in x:
+                print(timestamp(), "Unit {} found event at {}".format(self.unit.name, self.unit.fix_relative(i.get('href'))))
+        
 class Unit(object):
     def __init__(self, name, url, webpage):
         self.name = name
@@ -43,10 +51,10 @@ class Unit(object):
     def get_calendar(self):
         match = re.findall('(https?://.+/)(cat|day|month|year)([\._](listevents|calendar))', self.concat_links)
         if len(match) > 0:
-            return match[0][0]+'year'+match[0][2]+'/'
+            return match[0][0]+'year'+match[0][2]+'/{}/-'.format(DATE)
         match = re.findall('(https?://.+task=)(year|month|day)\.listevents', self.concat_links)
         if len(match) > 0:
-            return match[0][0]+'year.listevents'
+            return match[0][0]+'year.listevents/{}/-'.format(DATE)
         return None
 
     def get_basic(self):
@@ -80,10 +88,10 @@ class Unit(object):
         basic = self.get_basic()
         if calendar:
             print(timestamp(), '{} unit found links to events at {}'.format(self, calendar))
-            self.events_site = Events_site(calendar, CALENDAR)
+            self.events_site = Events_site(calendar, CALENDAR, self)
         elif basic:
             print(timestamp(), '{} unit found links to events at {}'.format(self, basic))
-            self.events_site = Events_site(basic, BASIC)
+            self.events_site = Events_site(basic, BASIC, self)
         else:
             for link in self.links:
                 print(timestamp(), '{} unit found possible candidate {}'.format(self, link))
