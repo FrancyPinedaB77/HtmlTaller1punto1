@@ -5,10 +5,13 @@ from django.db import models
 def run(command):
     subp = subprocess.Popen([command], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = subp.communicate()
+    if len(err) != 0:
+        print('ERROR al llamar {}:\n{}'.format(command, err.decode()))
     return out
 
 PATH = realpath('./bin')
-XQUERY = 'sh {}/busqueda.sh'.format(PATH) + ' -i {} {}'
+XQUERY = 'sh {}/busquedaXquery.sh'.format(PATH) + ' -i {} {}'
+REGEX = 'python3 {}/busquedaRegex.py'.format(PATH) + ' -i {} {}'
 
 class News(object):
     def __init__(self, code, title, date, url, description):
@@ -34,6 +37,18 @@ class NewsReader(object):
         self.get_news()
         string = re.sub(r'([^\s\w]|_)+', '', string)
         ids = run(XQUERY.format(kind, string))
+        ids = [int(x) for x in ids.split(b'\n')[:-1]]
+        filtered = []
+        for code in ids:
+            for news in self.news:
+                if news.code == code:
+                    filtered.append(news)
+        return filtered
+    
+    def filter_regex(self, string, kind):
+        self.get_news()
+        string = re.sub(r'([^\s\w]|_)+', '', string)
+        ids = run(REGEX.format(kind, string))
         ids = [int(x) for x in ids.split(b'\n')[:-1]]
         filtered = []
         for code in ids:
