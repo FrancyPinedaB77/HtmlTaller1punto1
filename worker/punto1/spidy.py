@@ -3,6 +3,8 @@ import re, datetime
 from threading import Thread
 
 TIMEOUT = 10
+CALENDAR = 'CALENDAR'
+BASIC = 'BASIC'
 
 def timestamp():
     return '[{}]'.format(datetime.datetime.utcnow())
@@ -20,6 +22,15 @@ def get_url(url, try_hard=False):
     except:
         print(timestamp(), 'Error: Couldn\'t get', url)
 
+class Events_site(object):
+    def __init__(self, url, kind):
+        self.url = url
+        self.webpage = get_url(self.url, try_hard=True)
+        self.kind = kind
+        self.get_events()
+    def get_events(self):
+        if self.kind == CALENDAR:
+            pass
 class Unit(object):
     def __init__(self, name, url, webpage):
         self.name = name
@@ -27,6 +38,7 @@ class Unit(object):
         self.webpage = webpage
         self.links = []
         self.concat_links = ''
+        self.events_site = None
 
     def get_calendar(self):
         match = re.findall('(https?://.+/)(cat|day|month|year)([\._](listevents|calendar))', self.concat_links)
@@ -68,23 +80,23 @@ class Unit(object):
         basic = self.get_basic()
         if calendar:
             print(timestamp(), '{} unit found links to events at {}'.format(self, calendar))
-            return calendar
+            self.events_site = Events_site(calendar, CALENDAR)
         elif basic:
             print(timestamp(), '{} unit found links to events at {}'.format(self, basic))
-            return basic
+            self.events_site = Events_site(basic, BASIC)
         else:
             for link in self.links:
                 print(timestamp(), '{} unit found possible candidate {}'.format(self, link))
-    
+
     def __str__(self):
         return(self.name)
-           
+
 class Spidy(object):
     def __init__(self, root_url):
         self.root_url = root_url
         self.root_page = get_url(self.root_url, try_hard=True)
         self.units = []
-        
+
     def get_units(self):
         matches = re.findall('<li><a\s+href="https?://([^"]+uniandes\.edu\.co)[^"]*"\s+[^>]*>([^<]*(Facultad|Centro|Escuela|Departamento)[^<]*)</a></li>', self.root_page)
         matches = list(set([i[:2] for i in matches]))
@@ -94,7 +106,7 @@ class Spidy(object):
         urls = []
         pages = []
         threads = []
-        
+
         for match in matches:
             urls.append('http://'+match[0])
             names.append(match[1])
@@ -103,11 +115,12 @@ class Spidy(object):
 
         def f(i, pages):
             pages[i] = get_url(urls[i], try_hard=True)
-            match = re.findall('location.href="(https?://[^"]+)"', pages[i])
-            if len(match) > 0:
-                print(timestamp(), 'Found redirection from {} to {}'.format(urls[i], match[0]))
-                urls[i] = match[0]
-                pages[i] = get_url(urls[i], try_hard=True)
+            if pages[i]:
+                match = re.findall('location.href="(https?://[^"]+)/"', pages[i])
+                if len(match) > 0:
+                    print(timestamp(), 'Found redirection from {} to {}'.format(urls[i], match[0]))
+                    urls[i] = match[0]
+                    pages[i] = get_url(urls[i], try_hard=True)
 
         for i in range(len(threads)):
             threads[i] = Thread(target=f, args=(i, pages))
@@ -119,10 +132,16 @@ class Spidy(object):
         for name, url, page in zip(names, urls, pages):
             if page:
                 self.units.append(Unit(name, url, page))
-                
+
     def get_all_links(self):
-        for unit in self.units:
-            unit.get_events_link()
+        threads = [None]*len(self.units)
+
+        for i in range(len(self.units)):
+            threads[i] = Thread(target=self.units[i].get_events_link)
+            threads[i].start()
+
+        for thread in threads:
+            thread.join()
 
 my_spidy = Spidy('http://uniandes.edu.co/institucional/facultades/facultades')
 my_spidy.get_units()
