@@ -2,11 +2,14 @@ import re
 import sys
 from itertools import permutations
 
+
 numargs = len(sys.argv)
+
 if numargs < 3:
     print('insuficientes argumentos')
     sys.exit(1)
 
+# opcion para que sea ignorecase = True
 if '-i' ==  sys.argv[1]:
     ignoreCase = True
     campo = sys.argv[2]
@@ -20,21 +23,28 @@ else:
     campo = sys.argv[1]
     palabras = sys.argv[2:]
 
+# 
 c = r"[^<]*"
+# Cadenas iniciales y finales para Titulo (T0,T1)
+qT0 = r"<item><id>(\d+)</id><title>"
+qT1 = r"</t"
 
-qT0 = "<item><id>(\d+)</id><title>"
-qT1 = "</t"
+# Cadenas iniciales y finales para Descripcion (D0,D1)
+qD0 = r"<item><id>(\d+)</id>(<[^>]+>[^<]+</[^>]+>){3}<description>"
+qD1 = r"</d"
 
-qD0 = "<item><id>(\d+)</id>(<[^>]+>[^<]+</[^>]+>){3}<description>"
-qD1 = "</d"
+# Cadenas iniciales y finales para Categoria (C0,C1)
+qC0 = r"<item><id>(\d+)</id>(<[^>]+>[^<]+</[^>]+>){4}\
+      (<category>[^<]+</category>)*(<category>"
+qC1 = r"</category>)+(<category>[^<]+</category>)*"
 
-qC0 = "<item><id>(\d+)</id>(<[^>]+>[^<]+</[^>]+>){4}(<category>[^<]+</category>)*(<category>"
-qC1 = "</category>)+(<category>[^<]+</category>)*"
+# Juntar cada palabra con el operador "o"
 regexOr = c + "("
 for w in palabras[:-1]:
     regexOr += w + "|"
 regexOr+=palabras[-1] + ")" + c
 
+# Para el operador "Y" se necesitan todas las posibles permutaciones
 perm = list(permutations(palabras))
 regexAnd = ""
 for per in perm[:-1]:
@@ -47,15 +57,16 @@ for w in list(perm[-1]):
     regexAnd += str(w) + c 
 regexAnd+=")"
 
-print(regexOr)
-print(regexAnd)
-
+# Concatenacion de las regex completas
 if campo == 'title':
-    queryAnd = 
-    print('Busqueda por', campo)
+    queryAnd = qT0 + regexAnd + qT1
+    queryOr = qT0 + regexOr + qT1
 elif campo == 'description':
-    print('Busqueda por', campo)
+    queryAnd = qD0 + regexAnd + qD1
+    queryOr = qD0 + regexOr + qD1
 elif campo == 'category':
+    queryAnd = qT0 + regexAnd + qT1
+    queryOr = qT0 + regexOr + qT1
     print('Busqueda por', campo)
 elif campo == 'all':
     print('Busqueda por', campo)
@@ -63,4 +74,5 @@ else:
     print('Campo invalido')
     sys.exit(1)
 
-print('palabras de busqueda',palabras)
+feed = open('./db_feed.xml','r').read()
+print(re.findall(queryOr,feed))
