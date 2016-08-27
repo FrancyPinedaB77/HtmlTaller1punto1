@@ -1,5 +1,4 @@
-import requests
-import re, datetime
+import requests, re, datetime, dateparser
 from threading import Thread
 from lxml import html
 
@@ -24,12 +23,39 @@ def get_url(url, try_hard=False):
     except:
         print(timestamp(), 'Error: Couldn\'t get', url)
 
+def get_date(info):
+    dates = re.findall('\w+,?(\s+(\d{1,2}\s+\w+|\w+\s+\d{1,2}),?\s+\d{4})', info)
+    hour = re.findall('^\s*(\d{1,2}:\d{2}[a-z]{0,2})', info,  flags=re.MULTILINE)[0]
+    try:
+        num_hour = [int(x) for x in hour.split(':')]
+        if num_hour[0] < 6:
+            hour = '{:02d}:{:02d}'.format(num_hour[0] + 12, num_hour[1])
+    except:
+        pass
+    ans = []
+    for date in dates:
+        date = date[0]
+        day = re.search('(\d{2})[\s,]', date).group(1)
+        month = re.search('[a-z]+', date, flags=re.I).group(0)
+        year = re.search('(\d{4})', date).group(0)
+    
+        date = '{} {} {} {}'.format(hour, day, month, year)
+        ans.append(dateparser.parse(date))
+    return ans[0]
+
+class Event(object): 
+    def __init__(self, name, url, date):
+        self.name = name
+        self.url = url
+        self.date = date.isoformat()
+        
 class Events_site(object):
     def __init__(self, url, kind, unit):
         self.url = url
         self.webpage = get_url(self.url, try_hard=True)
         self.kind = kind
         self.unit = unit
+        self.events = []
         self.get_events()
 
     def get_events(self):
@@ -37,16 +63,24 @@ class Events_site(object):
             tree = html.fromstring(self.webpage.encode())
             x = tree.xpath('//a[@class="cal_titlelink"]')
             for i in x:
-                link = i.get('href')
+                link = self.unit.fix_relative(i.get('href'))
                 i = i.getparent()
                 title = i.get('title')
                 data_content = i.get('data-content')
                 info = re.findall('<[^<>]+>([^<]+)', title)
                 if data_content:
                     info += re.findall('<[^<>]+>([^<]+)', data_content)
-                print(timestamp(), "Unit {} found event at {} with info:".format(self.unit, self.unit.fix_relative(link)))
-                for j in info:
-                    print('\t', j)
+                info = '\n'.join(info)
+                info = re.sub('(Evento único|(Clic para abrir( el evento)?|Click to open event)|(Single event)|(Desde|Hasta|Hora):&nbsp;|((Primer|Último)?( día de un )?[Ee]vento de varios días))', '', info)
+                info = re.sub('\s{3,}','\n', info)
+                date = get_date(info)
+                name = info.split('\n')[0]
+                print(timestamp(), "Unit {} found event:".format(self.unit))
+                print('\tname {}'.format(name))
+                print('\tdate {}'.format(date))
+                print('\tlink {}'.format(link))
+                self.events.append(Event(name, link, date))
+                
 class Unit(object):
     def __init__(self, name, url, webpage):
         self.name = name
@@ -162,3 +196,27 @@ class Spidy(object):
 my_spidy = Spidy('http://uniandes.edu.co/institucional/facultades/facultades')
 my_spidy.get_units()
 my_spidy.get_all_links()
+
+print('\n')
+
+
+def to_dict(unit):
+    dict_unit = unit.__dict__
+    del dict_unit['webpage']
+    del dict_unit['concat_links']
+    del dict_unit['links']
+    if unit.events_site:
+        dict_events_site = dict_unit['events_site'].__dict__
+        del dict_events_site['webpage']
+        del dict_events_site['unit']
+        dict_events_site['events'] = [x.__dict__ for x in dict_events_site['events']]
+        dict_unit['events_site'] = dict_events_site
+    return(dict_unit)
+
+import json
+for unit in my_spidy.units:
+    if unit:
+        my_dict = to_dict(unit)
+        print(json.dumps(my_dict, ensure_ascii=False))
+        print('\n')
+
