@@ -9,7 +9,7 @@ def run(command):
         print('ERROR al llamar {}:\n{}'.format(command, err.decode()))
     return out
 
-PATH = realpath('./bin')
+PATH = realpath('./bin/punto2')
 XQUERY = 'sh {}/busquedaXquery.sh'.format(PATH) + ' -i {} {}'
 REGEX = 'python3 {}/busquedaRegex.py'.format(PATH) + ' -i {} {}'
 
@@ -38,6 +38,7 @@ class NewsReader(object):
         string = re.sub(r'([^\s\w]|_)+', '', string)
         ids = run(XQUERY.format(kind, string))
         ids = [int(x) for x in ids.split(b'\n')[:-1]]
+        print('xquery', [ids])
         filtered = []
         for code in ids:
             for news in self.news:
@@ -49,7 +50,10 @@ class NewsReader(object):
         self.get_news()
         string = re.sub(r'([^\s\w]|_)+', '', string)
         ids = run(REGEX.format(kind, string))
+        if ids == b'\n':
+            ids = b''
         ids = [int(x) for x in ids.split(b'\n')[:-1]]
+        print('regex', [ids])
         filtered = []
         for code in ids:
             for news in self.news:
