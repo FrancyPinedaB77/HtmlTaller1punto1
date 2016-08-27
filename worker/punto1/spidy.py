@@ -1,4 +1,4 @@
-import requests, re, datetime, dateparser
+import requests, re, datetime, dateparser, json
 from threading import Thread
 from lxml import html
 
@@ -6,6 +6,7 @@ TIMEOUT = 10
 CALENDAR = 'CALENDAR'
 BASIC = 'BASIC'
 DATE = datetime.datetime.now().strftime('%Y/%m/%d')
+PATH = './jsons/'
 
 def timestamp():
     return '[{}]'.format(datetime.datetime.now())
@@ -22,6 +23,7 @@ def get_url(url, try_hard=False):
         return response
     except:
         print(timestamp(), 'Error: Couldn\'t get', url)
+        pass
 
 def get_date(info):
     dates = re.findall('\w+,?(\s+(\d{1,2}\s+\w+|\w+\s+\d{1,2}),?\s+\d{4})', info)
@@ -42,6 +44,19 @@ def get_date(info):
         date = '{} {} {} {}'.format(hour, day, month, year)
         ans.append(dateparser.parse(date))
     return ans[0]
+
+def to_dict(unit):
+    dict_unit = unit.__dict__
+    del dict_unit['webpage']
+    del dict_unit['concat_links']
+    del dict_unit['links']
+    if unit.events_site:
+        dict_events_site = dict_unit['events_site'].__dict__
+        del dict_events_site['webpage']
+        del dict_events_site['unit']
+        dict_events_site['events'] = [x.__dict__ for x in dict_events_site['events']]
+        dict_unit['events_site'] = dict_events_site
+    return(dict_unit)
 
 class Event(object): 
     def __init__(self, name, url, date):
@@ -115,11 +130,12 @@ class Unit(object):
         self.links = [self.fix_relative(i[0]) for i in self.links]
         clean_links = []
         for link in self.links:
-            if ('eventos.uniandes' not in link) and ('uniandes' in link):
+            if ('eventos.uniandes' not in link) and ('uniandes' in link) and ('destacados' not in link):
                 clean_links.append(link)
         self.links = clean_links
         if len(self.links) == 0:
             print(timestamp(), 'Error: {} unit didn\'t found any links'.format(self))
+            pass
         else:
             self.links.sort(key=lambda i: len(i))
             self.concat_links = '\n'.join(self.links)
@@ -137,9 +153,19 @@ class Unit(object):
         else:
             for link in self.links:
                 print(timestamp(), '{} unit found possible candidate {}'.format(self, link))
-
+                pass
+        self.to_json()
+                
+    def to_json(self):
+        my_dict = to_dict(self)
+        filename = re.search('https?://([^.]+).uniandes.edu.co',self.url).group(1)
+        f_output = open(PATH + filename + '.json', 'w')
+        f_output.write(json.dumps(my_dict, ensure_ascii=False))
+        f_output.close()
+        
     def __str__(self):
         return(self.name)
+    
 
 class Spidy(object):
     def __init__(self, root_url):
@@ -197,26 +223,6 @@ my_spidy = Spidy('http://uniandes.edu.co/institucional/facultades/facultades')
 my_spidy.get_units()
 my_spidy.get_all_links()
 
-print('\n')
 
 
-def to_dict(unit):
-    dict_unit = unit.__dict__
-    del dict_unit['webpage']
-    del dict_unit['concat_links']
-    del dict_unit['links']
-    if unit.events_site:
-        dict_events_site = dict_unit['events_site'].__dict__
-        del dict_events_site['webpage']
-        del dict_events_site['unit']
-        dict_events_site['events'] = [x.__dict__ for x in dict_events_site['events']]
-        dict_unit['events_site'] = dict_events_site
-    return(dict_unit)
-
-import json
-for unit in my_spidy.units:
-    if unit:
-        my_dict = to_dict(unit)
-        print(json.dumps(my_dict, ensure_ascii=False))
-        print('\n')
-
+        
