@@ -35,10 +35,18 @@ class Events_site(object):
     def get_events(self):
         if self.kind == CALENDAR:
             tree = html.fromstring(self.webpage.encode())
-            x = tree.xpath('//td[@class="cal_td_daysnames"]/../..//ul//a[@class="ev_link_row"]')
+            x = tree.xpath('//a[@class="cal_titlelink"]')
             for i in x:
-                print(timestamp(), "Unit {} found event at {}".format(self.unit.name, self.unit.fix_relative(i.get('href'))))
-        
+                link = i.get('href')
+                i = i.getparent()
+                title = i.get('title')
+                data_content = i.get('data-content')
+                info = re.findall('<[^<>]+>([^<]+)', title)
+                if data_content:
+                    info += re.findall('<[^<>]+>([^<]+)', data_content)
+                print(timestamp(), "Unit {} found event at {} with info:".format(self.unit, self.unit.fix_relative(link)))
+                for j in info:
+                    print('\t', j)
 class Unit(object):
     def __init__(self, name, url, webpage):
         self.name = name
@@ -51,10 +59,10 @@ class Unit(object):
     def get_calendar(self):
         match = re.findall('(https?://.+/)(cat|day|month|year)([\._](listevents|calendar))', self.concat_links)
         if len(match) > 0:
-            return match[0][0]+'year'+match[0][2]+'/{}/-'.format(DATE)
+            return match[0][0]+'month.calendar/{}/-'.format(DATE)
         match = re.findall('(https?://.+task=)(year|month|day)\.listevents', self.concat_links)
         if len(match) > 0:
-            return match[0][0]+'year.listevents/{}/-'.format(DATE)
+            return match[0][0]+'mont.calendar/{}/-'.format(DATE)
         return None
 
     def get_basic(self):
