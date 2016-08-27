@@ -1,5 +1,6 @@
-import re
 import sys
+import os
+import re
 from itertools import permutations
 
 
@@ -23,7 +24,8 @@ else:
     campo = sys.argv[1]
     palabras = sys.argv[2:]
 
-# 
+path = os.path.dirname(os.path.realpath(__file__))
+ 
 c = r"[^<]*"
 # Cadenas iniciales y finales para Titulo (T0,T1)
 qT0 = r"<item><id>(\d+)</id><title>"
@@ -74,7 +76,7 @@ else:
     print('Campo invalido')
     sys.exit(1)
 
-feed = open('./db_feed.xml','r').read()
+feed = open(path+'/db_feed.xml','r').read()
 results = re.findall(queryAnd,feed,flags=flag)+\
           re.findall(queryOr,feed,flags=flag)
 uniq = []
