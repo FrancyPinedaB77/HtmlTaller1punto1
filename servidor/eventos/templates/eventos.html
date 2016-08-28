@@ -3,47 +3,134 @@
   <head>
     <style type="text/css">
       div.organizer-more, div.email, div.organizer, div.key-w {display:inline;}
+    .key-w{
+    background: green;
+    padding: 5px;
+    -moz-border-radius: 6px 6px 6px 6px;
+    border-radius: 6px 6px 6px 6px; /* standards-compliant: (IE) */
+    }
+    .key-words{
+    padding: 10px;
+    }
     </style>
   </head>
 <body>
-<table border="2px" class="table">
-  <tbody>
+<table class="table" border="2px">
     <tr class="table">
-      <td class="leftbox">
+
+    <th rowspan="3" class="leftbox" >  
         <div class="date-time-place">
-	  <div class="day">27</div>
-	  <div class="month">Ago</div>            
-          <div class="year">2016</div>
-	  <div class="time">13:50</div>
-	  <div class="place">W504</div>
-        </div>
-      </td>
-      <td class="content">
-        <div class="content-div">
-	  <div class="title"><h3>Evento Super interesnte</h3></div>
-	  <div class="description">
-	    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-	      Phasellus volutpat aliquet justo, non mollis dui tempus
-	      quis. Suspendisse potenti. Praesent vitae est sapien.
-	      Pellentesque quis nunc odio amet.
-	      <a href="http://www.w3schools.com/html/html_links.asp">[leer mas]</a>
-	    </p>
-	  </div>
-	  <div class="organizer-info">
-	    Organiza:
-	    <div class="email"><a href="xavier@uniandes.edu.co">xavier@uniandes.edu.co</a></div>
-	    <div class="organizer-more">[mas info]</div>	   
-	    <div class="organizer">Profesor Xavier</div>
-	  </div>
-	  <div class="key-words">
-	    <div class="key-w">buaja</div>
-	    <div class="key-w">buaja</div>
-	    <div class="key-w">buaja</div>
-	  </div>
-        </div>
-      </td>
+    <div class="day">27</div><br>
+    <div class="month">Ago</div> <br>           
+          <div class="year">2016</div><br>
+     </div>
+   </th>     
+
+    <th colspan="4" class="content" >
+      <div class="content-div">
+        <div class="title"><h3>Evento Super interesnte</h3></div>
+      </div> 
+    </th>
+   </tr>
+  <tr  class="table">
+    <td colspan="4" rowspan="2" class="content">
+      <div class="content-div">
+      <div class="description">
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        Phasellus volutpat aliquet justo, non mollis dui tempus
+        quis. Suspendisse potenti. Praesent vitae est sapien.
+        Pellentesque quis nunc odio amet.
+        <a href="http://www.w3schools.com/html/html_links.asp">[leer mas]</a>
+      </p>
+    </div>
+    </div>
+    </td>
+  </tr>
+
+
+  <tr >
+  </tr>
+  <tr  class="table">
+    <td class="leftbox">
+    <div class="date-time-place">
+      <div class="time">13:50</div>
+    </div>
+    </td>
+    <td class="content">
+      <div class="content-div">
+      <div class="organizer-info">
+       Organiza: 
+      <div class="organizer">
+        Profesor Xavier
+      </div>
+    </div>
+  </div>
+    </td>
+
+    <td colspan="2"  class="content">
+      <div class="content-div">
+      <div class="organizer-info">
+      <div class="email"><a href="xavier@uniandes.edu.co">xavier@uniandes.edu.co</a>
+      </div>
+      </div>
+      </div>
+    </td>
+
+    <td  class="content">
+<div class="content-div">
+      <div class="organizer-info">
+      <div class="organizer-more">[mas info]
+      </div>
+    </div>
+  </div>
+    </td>
+
     </tr>
-  </tbody>
+  <tr  class="table">
+    <td class="leftbox">
+      <div class="date-time-place">
+      <div class="place">
+        W504
+      </div>
+      </div>
+    </td>
+    <td>
+      <div class="content-div">
+      <div class="key-words">
+  <div class="key-w">
+    buaja
+  </div>
+  </div>
+  </div>
+    </td>
+<td class="content">
+  <div class="content-div">
+      <div class="key-words">
+  <div class="key-w">
+    buaja
+  </div>
+  </div>
+  </div>
+</td>
+    <td class="content">
+      <div class="content-div">
+      <div class="key-words">
+  <div class="key-w">
+    buaja
+  </div>
+  </div>
+  </div>
+</td>
+    <td class="content">
+      <div class="content-div">
+      <div class="key-words">
+  <div class="key-w">
+    buaja
+  </div>
+  </div>
+  </div>
+</td>
+ </tr>
 </table>
 </body>
 </html>
